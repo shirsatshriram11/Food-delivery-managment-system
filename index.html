@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>🍕 Food Delivery OMS — DSA Mini Project</title>
+<style>
+/* ═══════════════════════════════════════════════
+   ROOT VARIABLES & RESET
+═══════════════════════════════════════════════ */
+:root{
+  --bg:#0f1117;--bg2:#161b27;--bg3:#1e2537;--bg4:#252d42;
+  --accent:#f97316;--accent2:#fb923c;--green:#22c55e;--red:#ef4444;
+  --blue:#3b82f6;--purple:#a855f7;--yellow:#eab308;--cyan:#06b6d4;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --border:#2d3a52;--card:#1a2236;
+  --radius:12px;--shadow:0 4px 24px rgba(0,0,0,.5);
+  --font:'Segoe UI',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+button{cursor:pointer;border:none;font-family:inherit}
+input,select{font-family:inherit}
+
+/* ═══════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════ */
+header{
+  background:linear-gradient(135deg,#1e2a45 0%,#0f1117 100%);
+  border-bottom:1px solid var(--border);
+  padding:16px 24px;display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 20px rgba(0,0,0,.6);
+}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-icon{font-size:32px}
+.logo-text h1{font-size:20px;font-weight:700;color:var(--accent);letter-spacing:.5px}
+.logo-text p{font-size:11px;color:var(--text2);margin-top:2px}
+.header-stats{display:flex;gap:16px}
+.stat-pill{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:20px;padding:6px 14px;font-size:12px;
+  display:flex;align-items:center;gap:6px;
+}
+.stat-pill span:first-child{color:var(--text2)}
+.stat-pill .val{color:var(--accent);font-weight:700}
+
+/* ═══════════════════════════════════════════════
+   MAIN LAYOUT
+═══════════════════════════════════════════════ */
+.layout{display:grid;grid-template-columns:340px 1fr 320px;gap:0;height:calc(100vh - 73px)}
+.panel{overflow-y:auto;padding:20px}
+.left-panel{border-right:1px solid var(--border);background:var(--bg2)}
+.center-panel{background:var(--bg)}
+.right-panel{border-left:1px solid var(--border);background:var(--bg2)}
+
+/* ═══════════════════════════════════════════════
+   SECTION TITLES
+═══════════════════════════════════════════════ */
+.section-title{
+  font-size:12px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--text2);
+  margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.ds-badge{
+  font-size:9px;padding:2px 7px;border-radius:10px;
+  font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+}
+.ds-vector{background:rgba(59,130,246,.2);color:#60a5fa;border:1px solid rgba(59,130,246,.3)}
+.ds-queue{background:rgba(34,197,94,.2);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
+.ds-stack{background:rgba(168,85,247,.2);color:#c084fc;border:1px solid rgba(168,85,247,.3)}
+.ds-ll{background:rgba(234,179,8,.2);color:#facc15;border:1px solid rgba(234,179,8,.3)}
+.ds-bst{background:rgba(249,115,22,.2);color:#fb923c;border:1px solid rgba(249,115,22,.3)}
+.ds-heap{background:rgba(6,182,212,.2);color:#22d3ee;border:1px solid rgba(6,182,212,.3)}
+.ds-hash{background:rgba(239,68,68,.2);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+
+/* ═══════════════════════════════════════════════
+   MENU ITEMS (BST)
+═══════════════════════════════════════════════ */
+.menu-search{
+  display:flex;gap:8px;margin-bottom:14px;
+}
+.menu-search input,.menu-search select{
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--text);border-radius:8px;padding:8px 12px;font-size:13px;
+}
+.menu-search input{flex:1}
+.menu-search select{width:110px}
+.menu-grid{display:flex;flex-direction:column;gap:8px}
+.menu-item{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  transition:all .2s;cursor:pointer;
+}
+.menu-item:hover{border-color:var(--accent);transform:translateX(3px)}
+.menu-item-info{display:flex;flex-direction:column;gap:2px}
+.menu-item-name{font-size:14px;font-weight:600}
+.menu-item-meta{font-size:11px;color:var(--text2);display:flex;gap:8px;align-items:center}
+.cat-tag{
+  background:var(--bg3);padding:1px 7px;border-radius:8px;
+  font-size:10px;border:1px solid var(--border);
+}
+.menu-item-price{
+  font-size:16px;font-weight:700;color:var(--accent);white-space:nowrap;
+}
+.add-btn{
+  background:var(--accent);color:#fff;border-radius:8px;
+  padding:6px 12px;font-size:12px;font-weight:700;
+  transition:all .2s;margin-left:10px;
+}
+.add-btn:hover{background:var(--accent2);transform:scale(1.05)}
+
+/* ═══════════════════════════════════════════════
+   CENTER: ORDER FORM + DS VISUALIZERS
+═══════════════════════════════════════════════ */
+.tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--bg2);padding:4px;border-radius:10px;border:1px solid var(--border)}
+.tab{
+  flex:1;padding:9px;border-radius:8px;font-size:12px;font-weight:600;
+  background:transparent;color:var(--text2);transition:all .2s;
+}
+.tab.active{background:var(--accent);color:#fff;box-shadow:0 2px 12px rgba(249,115,22,.4)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* Order Form */
+.order-form{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group label{font-size:12px;color:var(--text2);font-weight:600}
+.form-group input,.form-group select{
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--text);border-radius:8px;padding:10px 12px;font-size:13px;
+  transition:border-color .2s;
+}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--accent)}
+.form-group.full{grid-column:1/-1}
+.cart-area{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:14px;min-height:80px;margin-bottom:16px;
+}
+.cart-title{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.cart-items{display:flex;flex-direction:column;gap:6px}
+.cart-item{
+  display:flex;justify-content:space-between;align-items:center;
+  background:var(--card);border-radius:8px;padding:8px 12px;font-size:13px;
+  animation:slideIn .25s ease;
+}
+.cart-item-name{color:var(--text)}
+.cart-item-price{color:var(--accent);font-weight:700}
+.cart-item-del{
+  background:rgba(239,68,68,.15);color:var(--red);
+  border-radius:5px;padding:3px 8px;font-size:11px;margin-left:8px;
+}
+.cart-item-del:hover{background:rgba(239,68,68,.3)}
+.cart-empty{color:var(--text3);font-size:13px;text-align:center;padding:16px}
+.cart-total{
+  display:flex;justify-content:space-between;
+  border-top:1px solid var(--border);padding-top:10px;margin-top:10px;
+  font-weight:700;font-size:14px;
+}
+.place-btn{
+  width:100%;padding:13px;border-radius:10px;font-size:15px;font-weight:700;
+  background:linear-gradient(135deg,var(--accent),#dc6803);
+  color:#fff;transition:all .3s;box-shadow:0 4px 15px rgba(249,115,22,.3);
+}
+.place-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(249,115,22,.5)}
+.place-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* Express toggle */
+.express-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg3);border:1px solid var(--border);border-radius:8px;
+  padding:10px 14px;margin-bottom:14px;
+}
+.express-toggle label{font-size:13px;color:var(--text);display:flex;align-items:center;gap:8px}
+.toggle-switch{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle-switch input{opacity:0;width:0;height:0}
+.slider{
+  position:absolute;inset:0;background:var(--bg4);border-radius:12px;
+  transition:.3s;border:1px solid var(--border);
+}
+.slider:before{
+  content:'';position:absolute;height:18px;width:18px;
+  left:2px;bottom:2px;background:#fff;border-radius:50%;transition:.3s;
+}
+.toggle-switch input:checked + .slider{background:var(--cyan);border-color:var(--cyan)}
+.toggle-switch input:checked + .slider:before{transform:translateX(20px);background:#fff}
+.express-label{font-size:11px;color:var(--cyan);font-weight:700}
+
+/* ═══════════════════════════════════════════════
+   DS VISUALIZER — QUEUE
+═══════════════════════════════════════════════ */
+.ds-vis-section{margin-bottom:24px}
+.ds-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px;
+}
+.ds-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+.ds-actions{display:flex;gap:6px}
+.ds-btn{
+  padding:5px 12px;border-radius:7px;font-size:11px;font-weight:700;
+  transition:all .2s;
+}
+.btn-green{background:rgba(34,197,94,.2);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.btn-green:hover{background:rgba(34,197,94,.35)}
+.btn-red{background:rgba(239,68,68,.2);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.btn-red:hover{background:rgba(239,68,68,.35)}
+.btn-blue{background:rgba(59,130,246,.2);color:var(--blue);border:1px solid rgba(59,130,246,.3)}
+.btn-cyan{background:rgba(6,182,212,.2);color:var(--cyan);border:1px solid rgba(6,182,212,.3)}
+.btn-cyan:hover{background:rgba(6,182,212,.35)}
+.btn-purple{background:rgba(168,85,247,.2);color:var(--purple);border:1px solid rgba(168,85,247,.3)}
+.btn-purple:hover{background:rgba(168,85,247,.35)}
+
+/* Queue visual */
+.queue-visual{
+  display:flex;align-items:center;gap:6px;overflow-x:auto;
+  background:var(--bg3);border:1px solid var(--border);border-radius:10px;
+  padding:14px;min-height:72px;
+}
+.queue-node{
+  background:var(--card);border:2px solid var(--green);
+  border-radius:8px;padding:8px 14px;white-space:nowrap;
+  font-size:12px;font-weight:600;min-width:100px;text-align:center;
+  animation:slideIn .3s ease;position:relative;
+}
+.queue-node.first{border-color:var(--accent);background:rgba(249,115,22,.1)}
+.queue-arrow{color:var(--text3);font-size:18px;flex-shrink:0}
+.queue-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);padding:4px 14px 0}
+.queue-empty-msg{color:var(--text3);font-size:13px;width:100%;text-align:center}
+
+/* Stack visual */
+.stack-visual{
+  display:flex;flex-direction:column;gap:4px;
+  background:var(--bg3);border:1px solid var(--border);border-radius:10px;
+  padding:14px;min-height:72px;max-height:220px;overflow-y:auto;
+}
+.stack-node{
+  background:var(--card);border:2px solid var(--purple);
+  border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;
+  display:flex;justify-content:space-between;align-items:center;
+  animation:slideIn .3s ease;
+}
+.stack-node.top{border-color:var(--accent);background:rgba(249,115,22,.1)}
+.stack-top-label{font-size:9px;background:var(--accent);color:#fff;padding:1px 6px;border-radius:5px}
+
+/* Heap visual */
+.heap-visual{
+  background:var(--bg3);border:1px solid var(--border);border-radius:10px;
+  padding:16px;min-height:120px;overflow-x:auto;
+}
+.heap-tree{display:flex;flex-direction:column;align-items:center;gap:12px}
+.heap-level{display:flex;gap:12px;justify-content:center}
+.heap-node{
+  background:var(--card);border:2px solid var(--cyan);border-radius:50%;
+  width:72px;height:72px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;font-size:11px;font-weight:700;
+  animation:pop .3s ease;position:relative;text-align:center;
+}
+.heap-node.root-node{border-color:var(--accent);background:rgba(249,115,22,.1);width:80px;height:80px}
+.heap-node .hid{font-size:9px;color:var(--text3)}
+.heap-node .hprio{font-size:9px;color:var(--cyan)}
+.heap-node .express{font-size:9px;color:var(--accent)}
+
+/* Linked list visual */
+.ll-visual{
+  display:flex;align-items:flex-start;gap:0;overflow-x:auto;
+  background:var(--bg3);border:1px solid var(--border);border-radius:10px;
+  padding:14px;min-height:80px;
+}
+.ll-node{
+  display:flex;align-items:center;animation:slideIn .3s ease;flex-shrink:0;
+}
+.ll-box{
+  background:var(--card);border:2px solid var(--yellow);
+  border-radius:8px;padding:8px 12px;font-size:11px;min-width:110px;
+  font-weight:600;
+}
+.ll-box .ll-id{font-size:10px;color:var(--yellow)}
+.ll-box .ll-name{font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px}
+.ll-box .ll-status{font-size:10px;margin-top:2px}
+.ll-ptr{font-size:18px;color:var(--yellow);margin:0 6px}
+.ll-null{
+  background:var(--bg4);border:1px dashed var(--border);
+  border-radius:6px;padding:6px 10px;font-size:11px;color:var(--text3);
+  align-self:center;margin-left:6px;flex-shrink:0;
+}
+
+/* Hash map visual */
+.hash-visual{
+  background:var(--bg3);border:1px solid var(--border);border-radius:10px;
+  padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;
+  min-height:60px;
+}
+.hash-entry{
+  background:var(--card);border:1px solid var(--border);border-radius:8px;
+  padding:8px;font-size:11px;animation:slideIn .3s ease;
+}
+.hash-key{color:var(--red);font-weight:700;font-size:10px}
+.hash-val{color:var(--text);margin-top:2px}
+.hash-status{font-size:10px;margin-top:3px}
+
+/* BST visual */
+.bst-container{
+  background:var(--bg3);border:1px solid var(--border);border-radius:10px;
+  padding:16px;overflow:auto;
+}
+.bst-tree-wrap{overflow:auto}
+svg.bst-svg{display:block;min-width:600px}
+
+/* ═══════════════════════════════════════════════
+   RIGHT PANEL — ACTIVITY LOG & ORDER HISTORY
+═══════════════════════════════════════════════ */
+.activity-log{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto}
+.log-entry{
+  background:var(--card);border-left:3px solid var(--border);
+  border-radius:0 8px 8px 0;padding:8px 12px;font-size:12px;
+  animation:slideIn .25s ease;
+}
+.log-entry.success{border-color:var(--green)}
+.log-entry.info{border-color:var(--blue)}
+.log-entry.warn{border-color:var(--yellow)}
+.log-entry.error{border-color:var(--red)}
+.log-entry.express{border-color:var(--cyan)}
+.log-time{font-size:10px;color:var(--text3)}
+.log-msg{margin-top:2px;color:var(--text)}
+
+/* Order cards in history */
+.order-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px;margin-bottom:10px;
+  animation:slideIn .3s ease;transition:border-color .2s;
+}
+.order-card:hover{border-color:var(--accent)}
+.order-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.order-id{font-size:13px;font-weight:700;color:var(--accent)}
+.order-status-badge{
+  font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;
+}
+.status-placed{background:rgba(59,130,246,.2);color:#60a5fa}
+.status-confirmed{background:rgba(34,197,94,.2);color:#4ade80}
+.status-preparing{background:rgba(234,179,8,.2);color:#facc15}
+.status-delivery{background:rgba(6,182,212,.2);color:#22d3ee}
+.status-delivered{background:rgba(34,197,94,.3);color:#16a34a}
+.status-cancelled{background:rgba(239,68,68,.2);color:#f87171}
+.order-customer{font-size:12px;color:var(--text2);margin-bottom:6px}
+.order-items-list{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
+.order-item-chip{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:5px;padding:2px 8px;font-size:10px;color:var(--text2);
+}
+.order-footer{display:flex;justify-content:space-between;align-items:center}
+.order-total{font-weight:700;color:var(--accent);font-size:14px}
+.order-actions{display:flex;gap:6px}
+.mini-btn{
+  font-size:10px;font-weight:700;padding:4px 9px;border-radius:6px;transition:all .2s;
+}
+
+/* Toast notification */
+.toast-container{position:fixed;top:80px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px}
+.toast{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:10px;padding:12px 18px;font-size:13px;
+  display:flex;align-items:center;gap:10px;min-width:250px;
+  box-shadow:var(--shadow);animation:toastIn .3s ease;
+}
+.toast.success{border-color:var(--green);background:rgba(34,197,94,.1)}
+.toast.error{border-color:var(--red);background:rgba(239,68,68,.1)}
+.toast.info{border-color:var(--blue);background:rgba(59,130,246,.1)}
+.toast.express{border-color:var(--cyan);background:rgba(6,182,212,.1)}
+
+/* Modal */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;
+  align-items:center;justify-content:center;
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:var(--bg2);border:1px solid var(--border);border-radius:16px;
+  padding:24px;max-width:480px;width:90%;box-shadow:var(--shadow);
+  animation:pop .3s ease;
+}
+.modal h3{font-size:16px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
+.modal-btn{padding:9px 20px;border-radius:8px;font-size:13px;font-weight:700;transition:all .2s}
+.modal-btn.primary{background:var(--accent);color:#fff}
+.modal-btn.primary:hover{background:var(--accent2)}
+.modal-btn.secondary{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
+
+/* Status update form */
+.status-select{
+  background:var(--bg3);border:1px solid var(--border);color:var(--text);
+  border-radius:8px;padding:9px 12px;font-size:13px;width:100%;margin-top:8px;
+}
+
+/* ═══════════════════════════════════════════════
+   COMPLEXITY TABLE
+═══════════════════════════════════════════════ */
+.complexity-table{width:100%;border-collapse:collapse;font-size:12px}
+.complexity-table th{
+  background:var(--bg3);color:var(--text2);padding:8px 12px;
+  text-align:left;font-weight:700;font-size:11px;letter-spacing:.5px;
+}
+.complexity-table td{
+  padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text);
+}
+.complexity-table tr:hover td{background:var(--bg3)}
+.big-o{font-weight:700;font-family:monospace}
+.o-1{color:var(--green)}.o-logn{color:var(--blue)}.o-n{color:var(--yellow)}
+
+/* ═══════════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════════ */
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+@keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+@keyframes toastIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.pulse{animation:pulse 1.5s infinite}
+
+/* ═══════════════════════════════════════════════
+   EMPTY STATES
+═══════════════════════════════════════════════ */
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:30px;color:var(--text3);font-size:13px;gap:8px;
+}
+.empty-state span:first-child{font-size:28px}
+
+/* ═══════════════════════════════════════════════
+   PRIORITY BADGE
+═══════════════════════════════════════════════ */
+.prio-express{color:var(--cyan);font-size:10px;font-weight:700}
+.prio-normal{color:var(--text3);font-size:10px}
+
+/* responsive */
+@media(max-width:1100px){
+  .layout{grid-template-columns:1fr;height:auto}
+  .left-panel,.right-panel{border:none;border-bottom:1px solid var(--border)}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">🍕</div>
+    <div class="logo-text">
+      <h1>Food Delivery OMS</h1>
+      <p>DSA Mini Project — C++ + HTML | 7 Data Structures</p>
+    </div>
+  </div>
+  <div class="header-stats">
+    <div class="stat-pill"><span>Queue</span><span class="val" id="hdr-queue">0</span></div>
+    <div class="stat-pill"><span>Heap</span><span class="val" id="hdr-heap">0</span></div>
+    <div class="stat-pill"><span>History</span><span class="val" id="hdr-history">0</span></div>
+    <div class="stat-pill"><span>Total Orders</span><span class="val" id="hdr-total">0</span></div>
+  </div>
+</header>
+
+<!-- ══════════════ TOAST ══════════════ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ══════════════ UPDATE STATUS MODAL ══════════════ -->
+<div class="modal-overlay" id="statusModal">
+  <div class="modal">
+    <h3>✏️ Update Order Status</h3>
+    <div style="font-size:13px;color:var(--text2)">Order <span id="modalOrderId" style="color:var(--accent);font-weight:700"></span></div>
+    <select class="status-select" id="modalStatusSelect">
+      <option value="CONFIRMED">✅ Confirmed</option>
+      <option value="PREPARING">🍳 Preparing</option>
+      <option value="OUT_FOR_DELIVERY">🛵 Out for Delivery</option>
+      <option value="DELIVERED">🎉 Delivered</option>
+      <option value="CANCELLED">❌ Cancelled</option>
+    </select>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn primary" onclick="applyStatusUpdate()">Update Status</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MAIN LAYOUT ══════════════ -->
+<div class="layout">
+
+  <!-- ════════ LEFT: MENU (BST) ════════ -->
+  <div class="panel left-panel">
+    <div class="section-title">
+      🌳 Menu — BST <span class="ds-badge ds-bst">BST</span>
+    </div>
+    <div class="menu-search">
+      <input type="text" id="menuSearch" placeholder="Search items…" oninput="filterMenu()"/>
+      <select id="menuCatFilter" onchange="filterMenu()">
+        <option value="">All</option>
+        <option>Pizza</option><option>Burger</option>
+        <option>Sides</option><option>Drink</option><option>Dessert</option>
+      </select>
+    </div>
+    <div class="menu-grid" id="menuGrid"></div>
+  </div>
+
+  <!-- ════════ CENTER ════════ -->
+  <div class="panel center-panel">
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('place',this)">📝 Place Order</button>
+      <button class="tab" onclick="switchTab('ds',this)">📊 DS Visualizer</button>
+      <button class="tab" onclick="switchTab('complexity',this)">⏱ Complexity</button>
+    </div>
+
+    <!-- TAB: PLACE ORDER -->
+    <div class="tab-content active" id="tab-place">
+      <div class="order-form">
+        <div class="form-grid">
+          <div class="form-group"><label>👤 Customer Name</label>
+            <input type="text" id="custName" placeholder="e.g. Rahul Sharma"/></div>
+          <div class="form-group"><label>📞 Phone</label>
+            <input type="text" id="custPhone" placeholder="e.g. 9876543210"/></div>
+          <div class="form-group full"><label>📍 Delivery Address</label>
+            <input type="text" id="custAddr" placeholder="e.g. 12, MG Road, Bengaluru"/></div>
+        </div>
+
+        <div class="express-toggle">
+          <label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="expressToggle"/>
+              <span class="slider"></span>
+            </label>
+            ⚡ Express / VIP Delivery
+          </label>
+          <span class="express-label pulse" id="expressLbl" style="display:none">PRIORITY 1 — HEAP</span>
+        </div>
+
+        <!-- Cart (Vector DS) -->
+        <div class="cart-area">
+          <div class="cart-title">
+            <span>🛒 Cart <span class="ds-badge ds-vector">Vector</span></span>
+            <span id="cartCount" style="color:var(--text3);font-size:12px">0 items</span>
+          </div>
+          <div class="cart-items" id="cartItems">
+            <div class="cart-empty">Add items from the menu →</div>
+          </div>
+          <div class="cart-total" id="cartTotal" style="display:none">
+            <span>Total</span><span style="color:var(--accent)" id="cartTotalAmt">Rs.0</span>
+          </div>
+        </div>
+
+        <button class="place-btn" id="placeBtn" onclick="placeOrder()">🚀 Place Order</button>
+      </div>
+    </div>
+
+    <!-- TAB: DS VISUALIZER -->
+    <div class="tab-content" id="tab-ds">
+
+      <!-- QUEUE -->
+      <div class="ds-vis-section">
+        <div class="ds-header">
+          <div class="ds-title">📦 Processing Queue <span class="ds-badge ds-queue">QUEUE — FIFO</span></div>
+          <div class="ds-actions">
+            <button class="ds-btn btn-green" onclick="processNextQueue()">⬅ Dequeue</button>
+          </div>
+        </div>
+        <div class="queue-labels"><span>← FRONT (next to process)</span><span>REAR (new orders) →</span></div>
+        <div class="queue-visual" id="queueVis"><div class="queue-empty-msg">Queue is empty</div></div>
+      </div>
+
+      <!-- PRIORITY HEAP -->
+      <div class="ds-vis-section">
+        <div class="ds-header">
+          <div class="ds-title">⚡ Priority Queue <span class="ds-badge ds-heap">MIN-HEAP</span></div>
+          <div class="ds-actions">
+            <button class="ds-btn btn-cyan" onclick="processNextHeap()">Extract-Min</button>
+          </div>
+        </div>
+        <div class="heap-visual" id="heapVis"><div class="queue-empty-msg">Priority queue is empty</div></div>
+      </div>
+
+      <!-- STACK -->
+      <div class="ds-vis-section">
+        <div class="ds-header">
+          <div class="ds-title">📚 Recent Orders <span class="ds-badge ds-stack">STACK — LIFO</span></div>
+          <div class="ds-actions">
+            <button class="ds-btn btn-purple" onclick="undoLast()">↩ Pop (Undo)</button>
+          </div>
+        </div>
+        <div class="stack-visual" id="stackVis"><div class="queue-empty-msg">Stack is empty</div></div>
+      </div>
+
+      <!-- LINKED LIST -->
+      <div class="ds-vis-section">
+        <div class="ds-header">
+          <div class="ds-title">🔗 Order History <span class="ds-badge ds-ll">LINKED LIST</span></div>
+        </div>
+        <div class="ll-visual" id="llVis"><div class="queue-empty-msg">No orders yet</div></div>
+      </div>
+
+      <!-- HASH MAP -->
+      <div class="ds-vis-section">
+        <div class="ds-header">
+          <div class="ds-title">🗺 Order Tracker <span class="ds-badge ds-hash">HASH MAP — O(1)</span></div>
+        </div>
+        <div class="hash-visual" id="hashVis"><div class="queue-empty-msg" style="grid-column:1/-1">No entries</div></div>
+      </div>
+
+    </div>
+
+    <!-- TAB: COMPLEXITY -->
+    <div class="tab-content" id="tab-complexity">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+        <table class="complexity-table">
+          <thead>
+            <tr><th>Data Structure</th><th>Operation</th><th>Time</th><th>Space</th><th>Used For</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="ds-badge ds-vector">Vector</span></td><td>Add to Cart</td><td class="big-o o-1">O(1)*</td><td class="big-o o-n">O(n)</td><td>Cart item list</td></tr>
+            <tr><td><span class="ds-badge ds-queue">Queue</span></td><td>Enqueue / Dequeue</td><td class="big-o o-1">O(1)</td><td class="big-o o-n">O(n)</td><td>Normal order pipeline</td></tr>
+            <tr><td><span class="ds-badge ds-stack">Stack</span></td><td>Push / Pop</td><td class="big-o o-1">O(1)</td><td class="big-o o-n">O(n)</td><td>Undo last order</td></tr>
+            <tr><td><span class="ds-badge ds-ll">Linked List</span></td><td>Append</td><td class="big-o o-1">O(1)</td><td class="big-o o-n">O(n)</td><td>Order history log</td></tr>
+            <tr><td><span class="ds-badge ds-ll">Linked List</span></td><td>Search by ID</td><td class="big-o o-n">O(n)</td><td class="big-o o-1">O(1)</td><td>Status update</td></tr>
+            <tr><td><span class="ds-badge ds-bst">BST</span></td><td>Search / Insert</td><td class="big-o o-logn">O(log n)*</td><td class="big-o o-n">O(n)</td><td>Menu item lookup</td></tr>
+            <tr><td><span class="ds-badge ds-bst">BST</span></td><td>Sorted Display</td><td class="big-o o-n">O(n)</td><td class="big-o o-n">O(n)</td><td>In-order traversal</td></tr>
+            <tr><td><span class="ds-badge ds-heap">Min-Heap</span></td><td>Insert</td><td class="big-o o-logn">O(log n)</td><td class="big-o o-n">O(n)</td><td>Express order enqueue</td></tr>
+            <tr><td><span class="ds-badge ds-heap">Min-Heap</span></td><td>Extract-Min</td><td class="big-o o-logn">O(log n)</td><td class="big-o o-1">O(1)</td><td>Dispatch VIP order</td></tr>
+            <tr><td><span class="ds-badge ds-hash">Hash Map</span></td><td>Insert / Lookup</td><td class="big-o o-1">O(1)*</td><td class="big-o o-n">O(n)</td><td>Track order by ID</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:12px;font-size:11px;color:var(--text3);padding:0 4px">
+        * Amortized / average case &nbsp;|&nbsp; BST assumes balanced; worst case O(n) for skewed tree
+      </div>
+
+      <!-- DS connections diagram -->
+      <div style="margin-top:24px">
+        <div class="section-title">System Flow</div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;font-size:12px">
+          <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:center">
+            <div style="background:var(--bg3);border:1px solid var(--accent);border-radius:8px;padding:10px 14px;text-align:center">
+              <div>📝 Customer</div><div style="color:var(--text3);font-size:10px">Places order</div>
+            </div>
+            <div style="color:var(--text3)">→</div>
+            <div style="background:var(--bg3);border:1px solid var(--green);border-radius:8px;padding:10px 14px;text-align:center">
+              <div>📦 Queue</div><div style="color:var(--text3);font-size:10px">FIFO dispatch</div>
+            </div>
+            <div style="color:var(--text3)">or</div>
+            <div style="background:var(--bg3);border:1px solid var(--cyan);border-radius:8px;padding:10px 14px;text-align:center">
+              <div>⚡ Heap</div><div style="color:var(--text3);font-size:10px">Priority dispatch</div>
+            </div>
+            <div style="color:var(--text3)">+</div>
+            <div style="background:var(--bg3);border:1px solid var(--purple);border-radius:8px;padding:10px 14px;text-align:center">
+              <div>📚 Stack</div><div style="color:var(--text3);font-size:10px">Recent / Undo</div>
+            </div>
+            <div style="color:var(--text3)">+</div>
+            <div style="background:var(--bg3);border:1px solid var(--yellow);border-radius:8px;padding:10px 14px;text-align:center">
+              <div>🔗 Linked List</div><div style="color:var(--text3);font-size:10px">History</div>
+            </div>
+            <div style="color:var(--text3)">+</div>
+            <div style="background:var(--bg3);border:1px solid var(--red);border-radius:8px;padding:10px 14px;text-align:center">
+              <div>🗺 Hash Map</div><div style="color:var(--text3);font-size:10px">O(1) track</div>
+            </div>
+          </div>
+          <div style="margin-top:16px;text-align:center;color:var(--text3)">
+            Menu stored in <span style="color:var(--accent)">BST</span> → In-order gives sorted display |
+            Cart items use <span style="color:#60a5fa">Vector</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- center panel -->
+
+  <!-- ════════ RIGHT: ACTIVITY + ORDER HISTORY ════════ -->
+  <div class="panel right-panel">
+
+    <div class="section-title">📡 Activity Log</div>
+    <div class="activity-log" id="activityLog">
+      <div class="log-entry info">
+        <div class="log-time">System</div>
+        <div class="log-msg">🟢 System initialized. Menu loaded (19 items).</div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px"></div>
+    <div class="section-title">
+      🧾 Order History <span class="ds-badge ds-ll">LINKED LIST</span>
+    </div>
+    <div id="orderHistoryPanel">
+      <div class="empty-state"><span>📭</span><span>No orders yet</span></div>
+    </div>
+
+  </div>
+
+</div><!-- layout -->
+
+<script>
+// ════════════════════════════════════════════
+//  DATA — MENU (mimics C++ BST, sorted by name)
+// ════════════════════════════════════════════
+const MENU_ITEMS = [
+  {id:1,  name:"BBQ Chicken Pizza",      cat:"Pizza",   price:349},
+  {id:2,  name:"Cheesecake Slice",       cat:"Dessert", price:149},
+  {id:3,  name:"Chocolate Brownie",      cat:"Dessert", price:129},
+  {id:4,  name:"Classic Beef Burger",    cat:"Burger",  price:149},
+  {id:5,  name:"Coca-Cola (500ml)",      cat:"Drink",   price:49},
+  {id:6,  name:"Coleslaw",              cat:"Sides",   price:49},
+  {id:7,  name:"Crispy Chicken Burger",  cat:"Burger",  price:169},
+  {id:8,  name:"Double Cheese Burger",   cat:"Burger",  price:199},
+  {id:9,  name:"French Fries (Large)",   cat:"Sides",   price:79},
+  {id:10, name:"Fresh Lime Soda",        cat:"Drink",   price:69},
+  {id:11, name:"Garlic Bread",           cat:"Sides",   price:69},
+  {id:12, name:"Ice Cream Sundae",       cat:"Dessert", price:99},
+  {id:13, name:"Mango Shake",            cat:"Drink",   price:99},
+  {id:14, name:"Margherita Pizza",       cat:"Pizza",   price:199},
+  {id:15, name:"Mineral Water",          cat:"Drink",   price:30},
+  {id:16, name:"Onion Rings",            cat:"Sides",   price:89},
+  {id:17, name:"Pepperoni Pizza",        cat:"Pizza",   price:299},
+  {id:18, name:"Veg Aloo Burger",        cat:"Burger",  price:109},
+  {id:19, name:"Veggie Supreme Pizza",   cat:"Pizza",   price:249},
+];
+
+const CAT_ICONS = {Pizza:"🍕",Burger:"🍔",Sides:"🍟",Drink:"🥤",Dessert:"🍰"};
+
+// ════════════════════════════════════════════
+//  DATA STRUCTURES (JavaScript implementation)
+// ════════════════════════════════════════════
+
+// 1. QUEUE (FIFO) — normal orders
+let orderQueue = [];   // front = index 0
+
+// 2. STACK (LIFO) — recent orders
+let orderStack = [];   // top = last element
+
+// 3. LINKED LIST — history (simulated as array with pointer concept)
+let historyLL  = [];
+
+// 4. PRIORITY QUEUE (MIN-HEAP) — express orders
+let minHeap    = [];
+
+// 5. HASH MAP — order tracker
+const orderMap = new Map();
+
+// 6. VECTOR — cart (native array acts as vector)
+let cart = [];
+
+let orderIdCounter = 1001;
+
+// ════════════════════════════════════════════
+//  MIN-HEAP OPERATIONS
+// ════════════════════════════════════════════
+function heapSwap(a,i,j){[a[i],a[j]]=[a[j],a[i]]}
+function heapPriority(a,b){return a.priority!==b.priority ? a.priority<b.priority : a.orderId<b.orderId}
+
+function heapInsert(order){
+  minHeap.push(order);
+  let i=minHeap.length-1;
+  while(i>0){
+    const p=Math.floor((i-1)/2);
+    if(heapPriority(minHeap[i],minHeap[p])){heapSwap(minHeap,i,p);i=p;}
+    else break;
+  }
+}
+function heapExtract(){
+  if(!minHeap.length)return null;
+  const top=minHeap[0];
+  const last=minHeap.pop();
+  if(minHeap.length){minHeap[0]=last;heapDown(0);}
+  return top;
+}
+function heapDown(i){
+  const n=minHeap.length;
+  let s=i;
+  const l=2*i+1,r=2*i+2;
+  if(l<n&&heapPriority(minHeap[l],minHeap[s]))s=l;
+  if(r<n&&heapPriority(minHeap[r],minHeap[s]))s=r;
+  if(s!==i){heapSwap(minHeap,i,s);heapDown(s);}
+}
+
+// ════════════════════════════════════════════
+//  STATUS HELPERS
+// ════════════════════════════════════════════
+const STATUS_META = {
+  PLACED:           {label:"Placed",           cls:"status-placed"},
+  CONFIRMED:        {label:"Confirmed",         cls:"status-confirmed"},
+  PREPARING:        {label:"Preparing",         cls:"status-preparing"},
+  OUT_FOR_DELIVERY: {label:"Out for Delivery",  cls:"status-delivery"},
+  DELIVERED:        {label:"Delivered",         cls:"status-delivered"},
+  CANCELLED:        {label:"Cancelled",         cls:"status-cancelled"},
+};
+function statusBadge(s){
+  const m=STATUS_META[s]||{label:s,cls:"status-placed"};
+  return `<span class="order-status-badge ${m.cls}">${m.label}</span>`;
+}
+
+// ════════════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════════════
+function toast(msg,type='info',duration=3000){
+  const icons={success:'✅',info:'ℹ️',error:'❌',express:'⚡'};
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;
+  el.innerHTML=`<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+  document.getElementById('toastContainer').appendChild(el);
+  setTimeout(()=>el.remove(),duration);
+}
+
+// ════════════════════════════════════════════
+//  ACTIVITY LOG
+// ════════════════════════════════════════════
+function addLog(msg,type='info'){
+  const log=document.getElementById('activityLog');
+  const now=new Date().toLocaleTimeString();
+  const el=document.createElement('div');
+  el.className=`log-entry ${type}`;
+  el.innerHTML=`<div class="log-time">${now}</div><div class="log-msg">${msg}</div>`;
+  log.prepend(el);
+  if(log.children.length>30)log.removeChild(log.lastChild);
+}
+
+// ════════════════════════════════════════════
+//  RENDER MENU (BST in-order = alphabetical)
+// ════════════════════════════════════════════
+function renderMenu(items){
+  const grid=document.getElementById('menuGrid');
+  grid.innerHTML=items.length?'':'<div class="empty-state"><span>🔍</span><span>No items found</span></div>';
+  items.forEach(m=>{
+    const div=document.createElement('div');
+    div.className='menu-item';
+    div.innerHTML=`
+      <div class="menu-item-info">
+        <div class="menu-item-name">${CAT_ICONS[m.cat]||'🍴'} ${m.name}</div>
+        <div class="menu-item-meta"><span class="cat-tag">${m.cat}</span></div>
+      </div>
+      <div style="display:flex;align-items:center">
+        <div class="menu-item-price">₹${m.price}</div>
+        <button class="add-btn" onclick="addToCart(${m.id})">+ Add</button>
+      </div>`;
+    grid.appendChild(div);
+  });
+}
+
+function filterMenu(){
+  const q=document.getElementById('menuSearch').value.toLowerCase();
+  const cat=document.getElementById('menuCatFilter').value;
+  const filtered=MENU_ITEMS.filter(m=>
+    m.name.toLowerCase().includes(q) && (!cat||m.cat===cat)
+  );
+  renderMenu(filtered);
+}
+
+// ════════════════════════════════════════════
+//  CART OPERATIONS (Vector DS)
+// ════════════════════════════════════════════
+function addToCart(id){
+  const item=MENU_ITEMS.find(m=>m.id===id);
+  if(!item)return;
+  cart.push({...item,cartId:Date.now()+Math.random()});
+  renderCart();
+  toast(`Added: ${item.name}`, 'success', 1800);
+  addLog(`🛒 Added <b>${item.name}</b> to cart (Vector push_back)`, 'info');
+}
+
+function removeFromCart(cartId){
+  const i=cart.findIndex(c=>c.cartId===cartId);
+  if(i>=0){
+    const name=cart[i].name;
+    cart.splice(i,1);
+    renderCart();
+    addLog(`🗑 Removed <b>${name}</b> from cart (Vector erase)`, 'warn');
+  }
+}
+
+function renderCart(){
+  const box=document.getElementById('cartItems');
+  const total=cart.reduce((s,i)=>s+i.price,0);
+  document.getElementById('cartCount').textContent=`${cart.length} item${cart.length!==1?'s':''}`;
+  if(!cart.length){
+    box.innerHTML='<div class="cart-empty">Add items from the menu →</div>';
+    document.getElementById('cartTotal').style.display='none';
+    return;
+  }
+  box.innerHTML=cart.map(c=>`
+    <div class="cart-item">
+      <span class="cart-item-name">${CAT_ICONS[c.cat]||''} ${c.name}</span>
+      <span style="display:flex;align-items:center">
+        <span class="cart-item-price">₹${c.price}</span>
+        <button class="cart-item-del" onclick="removeFromCart(${c.cartId})">✕</button>
+      </span>
+    </div>`).join('');
+  document.getElementById('cartTotal').style.display='flex';
+  document.getElementById('cartTotalAmt').textContent=`₹${total.toFixed(2)}`;
+}
+
+// Express toggle
+document.getElementById('expressToggle').addEventListener('change',function(){
+  document.getElementById('expressLbl').style.display=this.checked?'inline':'none';
+});
+
+// ════════════════════════════════════════════
+//  PLACE ORDER
+// ════════════════════════════════════════════
+function placeOrder(){
+  const name=document.getElementById('custName').value.trim();
+  const phone=document.getElementById('custPhone').value.trim();
+  const addr=document.getElementById('custAddr').value.trim();
+  const isExpress=document.getElementById('expressToggle').checked;
+
+  if(!name){toast('Please enter customer name','error');return;}
+  if(!cart.length){toast('Cart is empty! Add items first','error');return;}
+
+  const order={
+    orderId: orderIdCounter++,
+    customerName: name,
+    phone: phone||'N/A',
+    address: addr||'N/A',
+    items: [...cart],
+    total: cart.reduce((s,i)=>s+i.price,0),
+    status: 'PLACED',
+    priority: isExpress?1:2,
+    timestamp: new Date().toLocaleTimeString(),
+    isExpress
+  };
+
+  // Register in all data structures:
+  orderMap.set(order.orderId, order);           // HashMap
+  historyLL.push(order);                         // Linked List (append tail)
+  orderStack.push(order);                        // Stack (push top)
+  if(isExpress) heapInsert(order);               // Min-Heap
+  else orderQueue.push(order);                   // Queue (rear)
+
+  // Clear cart
+  cart=[];
+  renderCart();
+  document.getElementById('custName').value='';
+  document.getElementById('custPhone').value='';
+  document.getElementById('custAddr').value='';
+  document.getElementById('expressToggle').checked=false;
+  document.getElementById('expressLbl').style.display='none';
+
+  // Re-render all visualizers
+  renderAll();
+  updateHeaderStats();
+
+  // Logs & toast
+  const type=isExpress?'express':'success';
+  toast(`Order #${order.orderId} placed!${isExpress?' ⚡ EXPRESS':''}`, type);
+  addLog(`📝 Order <b>#${order.orderId}</b> placed by <b>${name}</b> — ${isExpress?'⚡ <b>Express → Heap</b>':'📦 <b>Normal → Queue</b>'} (Total: ₹${order.total})`, type);
+
+  renderOrderHistory();
+  switchTab('ds', document.querySelectorAll('.tab')[1]);
+}
+
+// ════════════════════════════════════════════
+//  PROCESS NEXT — QUEUE
+// ════════════════════════════════════════════
+function processNextQueue(){
+  if(!orderQueue.length){toast('Processing queue is empty','error');return;}
+  const order=orderQueue.shift();  // dequeue from front
+  order.status='PREPARING';
+  orderMap.set(order.orderId,order);
+  updateLLStatus(order.orderId,'PREPARING');
+  renderAll();
+  renderOrderHistory();
+  updateHeaderStats();
+  toast(`Order #${order.orderId} is now PREPARING 🍳`,'success');
+  addLog(`🚀 <b>Dequeued</b> Order #${order.orderId} (${order.customerName}) → PREPARING`, 'success');
+}
+
+// ════════════════════════════════════════════
+//  PROCESS NEXT — HEAP (Extract-Min)
+// ════════════════════════════════════════════
+function processNextHeap(){
+  if(!minHeap.length){toast('Priority queue is empty','error');return;}
+  const order=heapExtract();
+  order.status='OUT_FOR_DELIVERY';
+  orderMap.set(order.orderId,order);
+  updateLLStatus(order.orderId,'OUT_FOR_DELIVERY');
+  renderAll();
+  renderOrderHistory();
+  updateHeaderStats();
+  toast(`⚡ Express Order #${order.orderId} dispatched! 🛵`,'express');
+  addLog(`⚡ <b>Extract-Min</b>: Order #${order.orderId} (${order.customerName}) → OUT FOR DELIVERY`, 'express');
+}
+
+// ════════════════════════════════════════════
+//  UNDO — STACK (Pop)
+// ════════════════════════════════════════════
+function undoLast(){
+  if(!orderStack.length){toast('No recent orders to undo','error');return;}
+  const order=orderStack.pop();
+  order.status='CANCELLED';
+  orderMap.set(order.orderId,order);
+  updateLLStatus(order.orderId,'CANCELLED');
+  // Remove from queue/heap if still there
+  const qi=orderQueue.findIndex(o=>o.orderId===order.orderId);
+  if(qi>=0)orderQueue.splice(qi,1);
+  const hi=minHeap.findIndex(o=>o.orderId===order.orderId);
+  if(hi>=0){minHeap.splice(hi,1);rebuildHeap();}
+  renderAll();
+  renderOrderHistory();
+  updateHeaderStats();
+  toast(`Order #${order.orderId} cancelled ❌`,'error');
+  addLog(`↩️ <b>Stack Pop</b>: Order #${order.orderId} (${order.customerName}) → CANCELLED`, 'warn');
+}
+
+function rebuildHeap(){
+  const tmp=[...minHeap];minHeap.length=0;
+  tmp.forEach(o=>heapInsert(o));
+}
+function updateLLStatus(id,status){
+  const o=historyLL.find(o=>o.orderId===id);
+  if(o)o.status=status;
+}
+
+// ════════════════════════════════════════════
+//  STATUS UPDATE (from order card)
+// ════════════════════════════════════════════
+let modalTargetId=null;
+function openStatusModal(id){
+  modalTargetId=id;
+  document.getElementById('modalOrderId').textContent=`#${id}`;
+  const cur=orderMap.get(id);
+  if(cur)document.getElementById('modalStatusSelect').value=cur.status;
+  document.getElementById('statusModal').classList.add('show');
+}
+function closeModal(){document.getElementById('statusModal').classList.remove('show');modalTargetId=null;}
+function applyStatusUpdate(){
+  if(!modalTargetId)return;
+  const ns=document.getElementById('modalStatusSelect').value;
+  const o=orderMap.get(modalTargetId);
+  if(o){
+    o.status=ns;
+    updateLLStatus(modalTargetId,ns);
+    toast(`Order #${modalTargetId} → ${ns.replace('_',' ')}`,'success');
+    addLog(`✏️ <b>HashMap update</b>: Order #${modalTargetId} status → <b>${ns}</b>`, 'info');
+    renderAll();
+    renderOrderHistory();
+  }
+  closeModal();
+}
+document.getElementById('statusModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+// ════════════════════════════════════════════
+//  RENDER — QUEUE
+// ════════════════════════════════════════════
+function renderQueue(){
+  const vis=document.getElementById('queueVis');
+  if(!orderQueue.length){vis.innerHTML='<div class="queue-empty-msg">Queue is empty</div>';return;}
+  vis.innerHTML=orderQueue.map((o,i)=>`
+    <div class="queue-node${i===0?' first':''}">
+      <div>#${o.orderId}</div>
+      <div style="color:var(--text2);font-size:10px">${o.customerName}</div>
+      <div style="color:var(--accent);font-size:11px">₹${o.total}</div>
+    </div>
+    ${i<orderQueue.length-1?'<div class="queue-arrow">→</div>':''}
+  `).join('');
+}
+
+// ════════════════════════════════════════════
+//  RENDER — HEAP TREE
+// ════════════════════════════════════════════
+function renderHeap(){
+  const vis=document.getElementById('heapVis');
+  if(!minHeap.length){vis.innerHTML='<div class="queue-empty-msg">Priority queue is empty</div>';return;}
+  // Build tree levels
+  let html='<div class="heap-tree">';
+  let level=0,idx=0;
+  while(idx<minHeap.length){
+    const count=Math.pow(2,level);
+    const nodes=minHeap.slice(idx,idx+count);
+    html+=`<div class="heap-level">`;
+    nodes.forEach((o,i)=>{
+      html+=`<div class="heap-node${level===0?' root-node':''}">
+        <div class="hid">#${o.orderId}</div>
+        <div style="font-size:11px;max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.customerName.split(' ')[0]}</div>
+        <div class="${o.priority===1?'express':'hprio'}">${o.priority===1?'⚡EXP':'Norm'}</div>
+      </div>`;
+    });
+    html+=`</div>`;
+    idx+=count;level++;
+  }
+  html+='</div>';
+  vis.innerHTML=html;
+}
+
+// ════════════════════════════════════════════
+//  RENDER — STACK
+// ════════════════════════════════════════════
+function renderStack(){
+  const vis=document.getElementById('stackVis');
+  if(!orderStack.length){vis.innerHTML='<div class="queue-empty-msg">Stack is empty</div>';return;}
+  vis.innerHTML=[...orderStack].reverse().map((o,i)=>`
+    <div class="stack-node${i===0?' top':''}">
+      <div>
+        <div style="font-size:11px;color:var(--text2)">#${o.orderId} — ${o.customerName}</div>
+        <div style="font-size:11px;color:var(--text3)">₹${o.total} | ${o.timestamp}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        ${statusBadge(o.status)}
+        ${i===0?'<span class="stack-top-label">TOP</span>':''}
+      </div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════
+//  RENDER — LINKED LIST
+// ════════════════════════════════════════════
+function renderLL(){
+  const vis=document.getElementById('llVis');
+  if(!historyLL.length){vis.innerHTML='<div class="queue-empty-msg">No orders yet</div>';return;}
+  vis.innerHTML=historyLL.map((o,i)=>`
+    <div class="ll-node">
+      <div class="ll-box">
+        <div class="ll-id">#${o.orderId}</div>
+        <div class="ll-name">${o.customerName}</div>
+        <div class="ll-status">${statusBadge(o.status)}</div>
+      </div>
+      ${i<historyLL.length-1?'<div class="ll-ptr">→</div>':''}
+    </div>
+  `).join('')+'<div class="ll-null">NULL</div>';
+}
+
+// ════════════════════════════════════════════
+//  RENDER — HASH MAP
+// ════════════════════════════════════════════
+function renderHash(){
+  const vis=document.getElementById('hashVis');
+  if(!orderMap.size){vis.innerHTML='<div class="queue-empty-msg" style="grid-column:1/-1">No entries</div>';return;}
+  vis.innerHTML='';
+  orderMap.forEach((o,id)=>{
+    const el=document.createElement('div');
+    el.className='hash-entry';
+    el.innerHTML=`
+      <div class="hash-key">Key: ${id}</div>
+      <div class="hash-val">${o.customerName}</div>
+      <div class="hash-status">${statusBadge(o.status)}</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:2px">₹${o.total}</div>`;
+    vis.appendChild(el);
+  });
+}
+
+// ════════════════════════════════════════════
+//  RENDER — ORDER HISTORY
+// ════════════════════════════════════════════
+function renderOrderHistory(){
+  const panel=document.getElementById('orderHistoryPanel');
+  if(!historyLL.length){
+    panel.innerHTML='<div class="empty-state"><span>📭</span><span>No orders yet</span></div>';
+    return;
+  }
+  panel.innerHTML=[...historyLL].reverse().map(o=>`
+    <div class="order-card">
+      <div class="order-card-header">
+        <span class="order-id">#${o.orderId}${o.isExpress?' ⚡':''}</span>
+        ${statusBadge(o.status)}
+      </div>
+      <div class="order-customer">👤 ${o.customerName} | 📞 ${o.phone}</div>
+      <div class="order-items-list">
+        ${o.items.map(i=>`<span class="order-item-chip">${i.name}</span>`).join('')}
+      </div>
+      <div class="order-footer">
+        <span class="order-total">₹${o.total.toFixed(2)}</span>
+        <div class="order-actions">
+          <button class="mini-btn btn-blue ds-btn" onclick="openStatusModal(${o.orderId})">✏️ Update</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════
+//  RENDER ALL
+// ════════════════════════════════════════════
+function renderAll(){
+  renderQueue();
+  renderHeap();
+  renderStack();
+  renderLL();
+  renderHash();
+}
+
+// ════════════════════════════════════════════
+//  HEADER STATS
+// ════════════════════════════════════════════
+function updateHeaderStats(){
+  document.getElementById('hdr-queue').textContent=orderQueue.length;
+  document.getElementById('hdr-heap').textContent=minHeap.length;
+  document.getElementById('hdr-history').textContent=historyLL.length;
+  document.getElementById('hdr-total').textContent=orderMap.size;
+}
+
+// ════════════════════════════════════════════
+//  TABS
+// ════════════════════════════════════════════
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════
+renderMenu(MENU_ITEMS);
+renderAll();
+updateHeaderStats();
+</script>
+</body>
+</html>
